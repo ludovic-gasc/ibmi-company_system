@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Système de gestion d'entreprise - Départements et Employés">
+    <meta name="theme-color" content="#1e40af">
+    <title>Système de Gestion d'Entreprise</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/png" href="images/icon-192.png">
+</head>
+<body>
+    <!-- Navigation principale -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span class="nav-title">Système de Gestion</span>
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="btn-icon" title="Changer le thème">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteneur principal -->
+    <main class="main-container">
+        <!-- Vue: Liste des départements -->
+        <div id="departmentsView" class="view active">
+            <div class="view-header">
+                <h1 class="view-title">Départements</h1>
+                <div class="view-actions">
+                    <button id="refreshDepts" class="btn btn-secondary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        Actualiser
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="searchDepts" placeholder="Rechercher un département...">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="col-action">Action</th>
+                                <th class="col-id sortable" data-sort="id">
+                                    ID
+                                    <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </th>
+                                <th class="sortable" data-sort="name">
+                                    Nom du département
+                                    <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </th>
+                                <th class="col-location">Localisation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deptsTableBody">
+                            <!-- Données chargées dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <div class="footer-info">
+                        <span id="deptsCount">0 département(s)</span>
+                    </div>
+                    <div class="footer-help">
+                        <span class="help-text">
+                            <kbd>5</kbd> Voir les employés • 
+                            <kbd>8</kbd> Nouvel employé
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vue: Liste des employés -->
+        <div id="employeesView" class="view">
+            <div class="view-header">
+                <button id="backToDepts" class="btn btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Retour
+                </button>
+                <h1 class="view-title">Employés - <span id="currentDeptName"></span></h1>
+                <div class="view-actions">
+                    <button id="addEmployeeFromList" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Nouvel employé
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="searchEmps" placeholder="Rechercher un employé...">
+                    </div>
+                    <div class="stats-badge">
+                        <span class="stats-label">Total des salaires:</span>
+                        <span class="stats-value" id="totalSalary">0,00 €</span>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="col-action">Action</th>
+                                <th class="col-id sortable" data-sort="id">
+                                    ID
+                                    <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </th>
+                                <th class="sortable" data-sort="name">
+                                    Nom complet
+                                    <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </th>
+                                <th class="sortable" data-sort="job">
+                                    Poste
+                                    <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </th>
+                                <th class="col-salary sortable" data-sort="salary">
+                                    Salaire
+                                    <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="empsTableBody">
+                            <!-- Données chargées dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <div class="footer-info">
+                        <span id="empsCount">0 employé(s)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vue: Nouvel employé -->
+        <div id="newEmployeeView" class="view">
+            <div class="view-header">
+                <button id="backFromNewEmp" class="btn btn-back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Retour
+                </button>
+                <h1 class="view-title">Nouvel Employé</h1>
+            </div>
+
+            <div class="card form-card">
+                <form id="newEmployeeForm" class="employee-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="empId">ID Employé</label>
+                            <input type="text" id="empId" readonly class="form-control-readonly">
+                            <small class="form-help">Généré automatiquement</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="empFirstName">Prénom <span class="required">*</span></label>
+                            <input type="text" id="empFirstName" maxlength="12" required class="form-control">
+                        </div>
+                        <div class="form-group form-group-small">
+                            <label for="empInitial">Initiale <span class="required">*</span></label>
+                            <input type="text" id="empInitial" maxlength="1" required class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="empLastName">Nom de famille <span class="required">*</span></label>
+                            <input type="text" id="empLastName" maxlength="15" required class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="empDept">Département</label>
+                            <input type="text" id="empDept" readonly class="form-control-readonly">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="empJob">Poste <span class="required">*</span></label>
+                            <input type="text" id="empJob" maxlength="8" required class="form-control">
+                            <small class="form-help">Ex: Manager, Analyst, Clerk</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="empSalary">Salaire annuel <span class="required">*</span></label>
+                            <input type="number" id="empSalary" step="0.01" min="0" required class="form-control">
+                            <small class="form-help">En euros</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="empPhone">Téléphone <span class="required">*</span></label>
+                            <input type="text" id="empPhone" maxlength="4" pattern="[0-9]{4}" required class="form-control">
+                            <small class="form-help">4 chiffres (ex: 1234)</small>
+                        </div>
+                    </div>
+
+                    <div id="formError" class="form-error"></div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancelNewEmp" class="btn btn-secondary">Annuler</button>
+                        <button type="submit" class="btn btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Créer l'employé
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
