@@ -1,0 +1,54 @@
+---
+- name: Configuration du serveur IBM i
+  hosts: ibmi
+  gather_facts: false
+  collections:
+    - ibm.power_ibmi
+
+  tasks:
+    - name: Installer les packages requis via yum
+      ansible.builtin.raw: /QOpenSys/pkgs/bin/yum install -y git tn5250 service-commander mapepire-server rsync ibmichroot nano tobi
+      register: yum_result
+
+    - name: Afficher le résultat de l'installation yum
+      debug:
+        var: yum_result
+
+    - name: Create ~/.bash_profile if not exists
+      ansible.builtin.file:
+        path: ~/.bash_profile
+        state: touch
+        mode: u+rw,g-rwx,o-rwx
+        modification_time: preserve
+        access_time: preserve
+      tags: profile
+
+    - name: Make sure function is in bashrc
+      ansible.builtin.blockinfile:
+        dest: ~/.bash_profile
+        marker: "# {mark} ANSIBLE MANAGED BLOCK bash_profile - Please do not modify"
+        block: |
+          # PS1: Shell prompt format
+          PS1="\e[1;34m[\u@\h \W]\$ \e[m"
+          export PS1
+          # PATH: All PASE binaries are in /QOpenSys/pkgs/bin
+          PATH=/QOpenSys/pkgs/bin:$PATH
+          export PATH
+          # LANG: some tools (for example: tmux) need UTF-8 charset
+          LANG=EN_US.UTF-8
+          export LANG
+      tags: profile
+
+    - name: Créer l'exemple SQL CMPSYS
+      ibm.power_ibmi.ibmi_sql_execute:
+        sql: "CALL QSYS.CREATE_SQL_SAMPLE('CMPSYS')"
+      register: sql_result
+
+    - name: Afficher le résultat de la création SQL
+      debug:
+        var: sql_result
+
+    - name: démarrer mapepire-server
+      ansible.builtin.raw: /QOpenSys/pkgs/bin/sc start mapepire
+
+# Made with Bob
