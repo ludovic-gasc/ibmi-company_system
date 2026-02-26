@@ -39,7 +39,7 @@ End-DS;
 Dcl-Ds Employee ExtName('EMPLOYEE') Alias Qualified;
 End-Ds;
 
-Dcl-s autoEmpId char(6);
+Dcl-s autoEmpId char(10);
 dcl-s currentError like(XERR);
 
 autoEmpId = getNewEmpId();
@@ -169,14 +169,14 @@ End-Proc;
 // Returns blank if error.
 ///
 Dcl-Proc getNewEmpId;
-  Dcl-Pi *N Char(6) End-Pi;
+  Dcl-Pi *N Char(10) End-Pi;
 
-  dcl-s result char(6);
-  dcl-s asChar varchar(6);
+  dcl-s result char(10);
+  dcl-s asChar varchar(10);
   dcl-s startI int(5);
   Dcl-s highestEmpId int(10);
 
-  result = '000000';
+  result = '0000000000';
 
   EXEC SQL
     select max(int(empno))
@@ -185,7 +185,7 @@ Dcl-Proc getNewEmpId;
     
   if (sqlstate = '00000');
     asChar = %Char(highestEmpId+100);
-    startI = 7 - %len(asChar);
+    startI = 11 - %len(asChar);
     %subst(result : startI) = asChar;
     Return result;
   endif;
