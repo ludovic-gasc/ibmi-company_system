@@ -23,6 +23,13 @@
         access_time: preserve
       tags: profile
 
+    - name: Create ~/.profile symlink to ~/.bashrc
+      ansible.builtin.file:
+        src: ~/.bashrc
+        dest: ~/.profile
+        state: link
+      tags: profile
+
     - name: Make sure function is in bashrc
       ansible.builtin.blockinfile:
         dest: ~/.bashrc
